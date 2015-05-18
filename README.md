@@ -23,7 +23,7 @@
 
 - GA, basically, with random per-gene objectives; fixed-length genomes
 - simultaneous permutation pattern avoidance, for a suite of patterns (score each sequence of length N>m for whether it avoids a (random) permutation pattern of length m); variable-length genomes of numbers, permits mixed crossover (no known work extant) (a lot like Terry Jones's RS landscapes)
-x- RS landscapes
+- RS landscapes
 - (sidebar: what is it that makes a GA problem suitable for lexicasing? e.g. knapsack is bad; Nk is good)
 
 ### some medium problems we know can be solved by Clojush implementations
