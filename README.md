@@ -14,7 +14,7 @@
 ### some easy problems to get a feel for it all
 
 - GA, basically, with random per-gene objectives; fixed-length genomes
-- simultaneous permutation pattern avoidance, for a suite of patterns; variable-length genomes of numbers, permits mixed crossover (no known work extant)
+- simultaneous permutation pattern avoidance, for a suite of patterns (score each sequence of length N>m for whether it avoids a (random) permutation pattern of length m); variable-length genomes of numbers, permits mixed crossover (no known work extant)
 - Nk landscapes
 
 ### some medium problems we know can be solved by Clojush implementations
