@@ -1,7 +1,5 @@
 # exploring a slight extension of the max-ones problem
 
-require 'pp'
-
 @number_of_individuals = 1000
 @number_of_rubrics = 200
 
@@ -66,18 +64,53 @@ end
 # d = (31..60).to_a
 # puts crossover(m,d,0.1).inspect
 
-def next_tableau(tableau)
+def next_lexicase_tableau(tableau,prob=0.1)
   result = []
   @number_of_individuals.times do
     mom = tableau[lexicase_select(tableau)]
     dad = tableau[lexicase_select(tableau)]
-    baby = crossover(mom,dad)
+    baby = crossover(mom,dad,prob)
     result << baby
   end
   return result
 end
 
-30.times do 
-  pp @tt
-  @tt = next_tableau(@tt)
+def next_tournament_tableau(tableau,prob=0.1)
+  result = []
+  @number_of_individuals.times do
+    mom = tableau[tournament_select(tableau,7)]
+    dad = tableau[tournament_select(tableau,7)]
+    baby = crossover(mom,dad,prob)
+    result << baby
+  end
+  return result
 end
+
+
+## You know, this could take a while…
+
+@lexi = @tt.clone
+
+puts "original tableau"
+@lexi.each {|r| puts r.inspect}; puts "\n\n\n"
+
+300.times do 
+  @lexi = next_lexicase_tableau(@lexi)
+end
+
+puts "after 300 generations of lexicase:"
+@lexi.each {|r| puts r.inspect}; puts "\n\n\n"
+
+## tournament
+
+@tourni = @tt.clone
+
+puts "original tableau"
+@tourni.each {|r| puts r.inspect}; puts "\n\n\n"
+
+300.times do 
+  @tourni = next_tournament_tableau(@tourni)
+end
+
+puts "after 300 generations of tournament:"
+@tourni.each {|r| puts r.inspect}; puts "\n\n\n"
