@@ -89,28 +89,34 @@ end
 
 ## You know, this could take a while…
 
-@lexi = @tt.clone
+File.open("1000x200x300-lexicase.csv", "w") do |out_file|
+  @lexi = @tt.clone
+  p "writing original tableau"
 
-puts "original tableau"
-@lexi.each {|r| puts r.inspect}; puts "\n\n\n"
-
-300.times do 
-  @lexi = next_lexicase_tableau(@lexi)
+  (0...300).each do |gen|
+    p "generation #{gen}..."
+    (0...@number_of_individuals).each_with_index do |dude,idx|
+      total_error = @lexi[dude].inject(0) {|sum,err| sum+err}
+      line = "#{gen},#{idx},#{total_error}" + @lexi[dude].join(",")
+      out_file.puts line
+    end
+    @lexi = next_lexicase_tableau(@lexi)
+  end
+  
 end
-
-puts "after 300 generations of lexicase:"
-@lexi.each {|r| puts r.inspect}; puts "\n\n\n"
 
 ## tournament
+File.open("1000x200x300-tournament.csv", "w") do |out_file|
+  @tournie = @tt.clone
+  p "writing original tableau"
 
-@tourni = @tt.clone
-
-puts "original tableau"
-@tourni.each {|r| puts r.inspect}; puts "\n\n\n"
-
-300.times do 
-  @tourni = next_tournament_tableau(@tourni)
+  (0...300).each do |gen|
+    p "generation #{gen}..."
+    (0...@number_of_individuals).each_with_index do |dude,idx|
+      total_error = @tournie[dude].inject(0) {|sum,err| sum+err}
+      line = "#{gen},#{idx},#{total_error}" + @tournie[dude].join(",")
+      out_file.puts line
+    end
+    @tournie = next_tournament_tableau(@tournie)
+  end
 end
-
-puts "after 300 generations of tournament:"
-@tourni.each {|r| puts r.inspect}; puts "\n\n\n"
