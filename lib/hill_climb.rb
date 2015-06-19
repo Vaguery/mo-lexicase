@@ -19,6 +19,11 @@ class Tableau
   end
 
 
+  def random_ordinal!
+    @population = (@rubrics.times.collect {(0...pop_size).to_a.shuffle}).transpose
+  end
+
+
   def lexicase_index
     filtering_order = (0...@rubrics).to_a.shuffle
     candidates = (0...pop_size).to_a
