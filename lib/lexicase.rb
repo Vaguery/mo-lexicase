@@ -1,9 +1,9 @@
 require './hill_climb'
 
-t = Tableau.new(100,300)
-t.random_ordinal!
+t = Tableau.new(100,100,100)
+# t.random_ordinal!
 
-100.times do 
+50.times do 
   t.show_pop
   puts "\n\n"
   t = t.next_generation
