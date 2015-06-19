@@ -1,10 +1,12 @@
+require 'rspec'
+
 # exploring a slight extension of the max-ones problem
 
-@number_of_individuals = 1000
-@number_of_rubrics = 200
+@number_of_individuals = 100
+@number_of_rubrics = 10
 
 tableau = @number_of_rubrics.times.collect do |i|
-  (0...@number_of_individuals).to_a.shuffle  # @number_of_individuals.times.collect {Random.rand(@number_of_individuals)}
+  @number_of_individuals.times.collect {Random.rand(3)}
 end
 
 @tt = tableau.transpose
@@ -24,7 +26,7 @@ end
 def lexicase_select(tableau)
   filter_order = (0...@number_of_rubrics).to_a.shuffle
   candidates = (0...@number_of_individuals).to_a
-  scratch = @tt.clone
+  scratch = @tt.dup
 
   until filter_order.empty? || scratch.length < 2
     filter = filter_order.pop
@@ -50,38 +52,42 @@ end
 # puts "Tournament (7): #{tourney_histogram.length}"
 # puts "Lexicase: #{lexi_histogram.length}"
 
-def crossover(mom,dad,prob=0.05)
-  baby = []
+def crossover(mom,dad,prob=0.5)
+  babies = [[],[]]
   from_mom = true
   mom.each_with_index do |token,idx|
-    baby.push (from_mom ? mom[idx] : dad[idx])
-    from_mom = !from_mom if Random.rand() < prob
+    from_mom = Random.rand() < prob
+    babies[0].push (from_mom ? token : dad[idx])
+    babies[1].push (from_mom ? dad[idx] : token)
   end
-  return baby
+  # puts "#{mom.inspect} x #{dad.inspect} -> #{babies.inspect}"
+  return babies
 end
 
 # m = (1..30).to_a
 # d = (31..60).to_a
 # puts crossover(m,d,0.1).inspect
 
-def next_lexicase_tableau(tableau,prob=0.1)
+def next_lexicase_tableau(tableau,prob=0.5)
   result = []
-  @number_of_individuals.times do
+  (@number_of_individuals/2).times do
     mom = tableau[lexicase_select(tableau)]
     dad = tableau[lexicase_select(tableau)]
-    baby = crossover(mom,dad,prob)
-    result << baby
+    babies = crossover(mom,dad,prob)
+    result << babies[0]
+    result << babies[1]
   end
   return result
 end
 
-def next_tournament_tableau(tableau,prob=0.1)
+def next_tournament_tableau(tableau,prob=0.5)
   result = []
-  @number_of_individuals.times do
+  (@number_of_individuals/2).times do
     mom = tableau[tournament_select(tableau,7)]
     dad = tableau[tournament_select(tableau,7)]
-    baby = crossover(mom,dad,prob)
-    result << baby
+    babies = crossover(mom,dad,prob)
+    result << babies[0]
+    result << babies[1]
   end
   return result
 end
@@ -89,15 +95,15 @@ end
 
 ## You know, this could take a while…
 
-File.open("1000x200x300-lexicase.csv", "w") do |out_file|
+File.open("spikes/1000x200x300-lexicase.csv", "w") do |out_file|
   @lexi = @tt.clone
   p "writing original tableau"
 
-  (0...300).each do |gen|
+  (0..300).each do |gen|
     p "generation #{gen}..."
-    (0...@number_of_individuals).each_with_index do |dude,idx|
-      total_error = @lexi[dude].inject(0) {|sum,err| sum+err}
-      line = "#{gen},#{idx},#{total_error}" + @lexi[dude].join(",")
+    (0...@number_of_individuals).each do |idx|
+      total_error = @lexi[idx].inject(0) {|sum,err| sum+err}
+      line = "#{gen},#{idx},#{total_error}," + @lexi[idx].join(",")
       out_file.puts line
     end
     @lexi = next_lexicase_tableau(@lexi)
@@ -106,15 +112,15 @@ File.open("1000x200x300-lexicase.csv", "w") do |out_file|
 end
 
 ## tournament
-File.open("1000x200x300-tournament.csv", "w") do |out_file|
-  @tournie = @tt.clone
+File.open("spikes/1000x200x300-tournament.csv", "w") do |out_file|
+  @tournie = @tt.dup
   p "writing original tableau"
 
   (0...300).each do |gen|
     p "generation #{gen}..."
-    (0...@number_of_individuals).each_with_index do |dude,idx|
-      total_error = @tournie[dude].inject(0) {|sum,err| sum+err}
-      line = "#{gen},#{idx},#{total_error}" + @tournie[dude].join(",")
+    (0...@number_of_individuals).each do |idx|
+      total_error = @tournie[idx].inject(0) {|sum,err| sum+err}
+      line = "#{gen},#{idx},#{total_error}," + @tournie[idx].join(",")
       out_file.puts line
     end
     @tournie = next_tournament_tableau(@tournie)
