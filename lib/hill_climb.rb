@@ -24,8 +24,28 @@ class Tableau
   end
 
 
+
   def lexicase_index
     filtering_order = (0...@rubrics).to_a.shuffle
+    candidates = (0...pop_size).to_a
+
+    until filtering_order.empty? || candidates.length < 2
+      filter_rubric = filtering_order.pop
+      remaining_scores_at_that = candidates.collect {|idx| @population[idx][filter_rubric]}
+      best_score = remaining_scores_at_that.sort[0]
+      new_candidates = candidates.keep_if {|idx| @population[idx][filter_rubric] == best_score}
+      if new_candidates.empty?
+        candidates = [candidates.sample]
+      else
+        candidates = new_candidates
+      end
+    end
+    return candidates.sample
+  end
+
+
+  def generalized_lexicase_index(subset_size=@rubrics)
+    filtering_order = (0...@rubrics).to_a.sample(subset_size).shuffle
     candidates = (0...pop_size).to_a
 
     until filtering_order.empty? || candidates.length < 2
@@ -74,6 +94,17 @@ class Tableau
     end
     return tng
   end
+
+
+  def next_crossover_generalized_lexicase_generation(subset_size=@rubrics)
+    tng = Tableau.new(self.pop_size,@rubrics,@range)
+    tng.population = tng.pop_size.times.collect do
+      Tableau.crossover(@population[generalized_lexicase_index(subset_size)],
+        @population[generalized_lexicase_index(subset_size)])
+    end
+    return tng
+  end
+
 
 
   def next_crossover_tournament_generation(tourney_size=7)

@@ -10,7 +10,7 @@ File.open("../discard.csv", "w") do |outfile|
     puts i
     outfile.puts step
     break if t.population.uniq.length == 1
-    t = t.next_crossover_tournament_generation(2)
+    t = t.next_crossover_generalized_lexicase_generation(50)
   end
 end
 
