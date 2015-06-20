@@ -48,6 +48,8 @@ Finally, it should be clear that this "blending" can be applied to _partial lexi
 
 ## partial multiobjective selection = "ordinal selection" and "projective selection"
 
+(with numerous references needed to [this paper](http://www.evolved-analytics.com/sites/EA_Documents/Publications/GPTP06/GPTP06_ParetoParadigm_Preprint.pdf) (PDF))
+
 Multiobjective selection depends on a generalized notion of "domination". In general, given two vector-valued scores with $$o$$ components, we say one score $$A$$  _dominates_ another $$B$$ if _no component of $$A$$ is worse than the matching component of $$B$$, and at least one component of $$A$$ is better than the matching component of $$B$$_.
 
 Without getting dragged into innumerable details (and a century of esoteric engineering work), a few notable things about this: When the number of component objectives $$o$$ is reduced to 1, multiobjective selection is reduced to simple ranking (with the possibility of ties). Aggregation of the $$o$$ objectives into a single _proxy_ objective (typically by affine combination) is traditional but often a bad idea, especially in difficult  nonlinear contexts. The "sortability" of multiobjective comparisons drops off quickly as $$o$$ increases, and it quickly becomes the case as dimensions increase that two vectors can be mutually non-dominating (and therefore "tied") _even though their values are completely different_.
