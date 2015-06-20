@@ -43,12 +43,31 @@ class Tableau
   end
 
 
+  def tournament_index(tourney_size=7)
+    candidates = (0...pop_size).to_a.sample(tourney_size)
+    scored = Hash.new(0)
+    candidates.each {|idx| scored[idx] = total_score(@population[idx])}
+    best_score = scored.values.min
+    bests = scored.select {|k,v| v==best_score}
+    return bests.keys.sample
+  end
+
+
   def self.crossover(mom,dad)
     (0...mom.length).collect {|idx| Random.rand() < 0.5 ? mom[idx] : dad[idx]}
   end
 
 
-  def next_generation
+  def self.alternation(mom,dad,prob=0.1)
+    from_mom = false
+    (0...mom.length).collect do |idx|
+      from_mom = !from_mom if Random.rand() < prob 
+      from_mom ? mom[idx] : dad[idx]
+    end
+  end
+
+
+  def next_crossover_lexicase_generation
     tng = Tableau.new(self.pop_size,@rubrics,@range)
     tng.population = tng.pop_size.times.collect do
       Tableau.crossover(@population[lexicase_index],@population[lexicase_index])
@@ -57,7 +76,35 @@ class Tableau
   end
 
 
+  def next_crossover_tournament_generation(tourney_size=7)
+    tng = Tableau.new(self.pop_size,@rubrics,@range)
+    tng.population = tng.pop_size.times.collect do
+      Tableau.crossover(@population[tournament_index(tourney_size)],
+        @population[tournament_index(tourney_size)])
+    end
+    return tng
+  end
+
+
+  def next_alternation_generation
+    tng = Tableau.new(self.pop_size,@rubrics,@range)
+    tng.population = tng.pop_size.times.collect do
+      Tableau.crossover(@population[lexicase_index],@population[lexicase_index])
+    end
+    return tng
+  end
+
+
+  def total_score(answer)
+    return answer.inject(0) {|sum,rubric| sum+rubric}
+  end
+
+
   def show_pop
-    @population.each {|a| puts a.join(",")}
+    id = 0
+    @population.inject("") do |report,answer|
+      id += 1
+      report + "#{id},#{total_score(answer)}," + answer.join(",") + "\n"
+    end
   end
 end
